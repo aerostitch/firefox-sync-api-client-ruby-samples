@@ -20,13 +20,13 @@ def get_captcha()
     puts response.body
 end
 
-def check_username_exists() # Does not work for now!
+def check_username_exists(ff_username)
     # Defining variables to build uri
     # https://<server name>/<api path set>/<version>/<username>/<further instruction>
     ff_api_svc = 'user'
     ff_api_version = '1.0'
-    ff_username = 'thetheo'
-    ff_further_instructions = ''
+    # ff_username = ''
+    # ff_further_instructions = ''
     # uri = URI.parse("https://#$ff_server/#{ff_api_svc}/#{ff_api_version}/#{ff_username}/#{ff_further_intructions}")
     uri = URI.parse("https://#$ff_server/#{ff_api_svc}/#{ff_api_version}/#{ff_username}")
     # Proceed the request
@@ -38,4 +38,4 @@ def check_username_exists() # Does not work for now!
 end
 
 # get_captcha()
-check_username_exists()
+check_username_exists('thetheo')
