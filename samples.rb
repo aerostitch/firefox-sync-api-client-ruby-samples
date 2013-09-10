@@ -2,9 +2,17 @@
 
 require "net/http"
 require "uri"
-# require "openssl"
-require 'digest/sha1'
-require "base32"
+require "digest/sha1"
+require "base32" # requires to install gem base32
+
+# TODO:
+# I have to test method used at:
+# https://github.com/iivvoo/Firefox-sync-example/blob/master/client.py
+# and
+# https://github.com/mikerowehl/firefox-sync-client-php/blob/master/sync.php
+#
+# TODO:
+# Transform that to a class
 
 # Defining variables to build uri
 $ff_server = 'auth.services.mozilla.com'
@@ -22,15 +30,9 @@ def get_captcha()
     puts response.body
 end
 
-# BE CAREFULL! This does not seems to work yet!
-# I have to test method used at:
-# https://github.com/iivvoo/Firefox-sync-example/blob/master/client.py
-# and
-# https://github.com/mikerowehl/firefox-sync-client-php/blob/master/sync.php
-# perhaps that would work
 def encrypt_username(username)
     # require "digest/sha1"
-    signature = Base32::encode(Digest::SHA1.hexdigest(username.downcase())).downcase()
+    signature = Base32::encode(Digest::SHA1.digest(username.downcase())).downcase()
     # # require "openssl"
     # sha_enc = OpenSSL::Digest::SHA1.new
     # sha_enc.update(username.downcase())
@@ -59,7 +61,7 @@ def ff_user_api_proceed_get_request(ff_username, ff_further_instructions = '')
     uri = ff_user_api_build_uri(ff_username, ff_further_instructions)
     # Proceed the GET request
     http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true if uri.scheme = 'https'
+    http.use_ssl = true if uri.scheme == 'https'
     response = http.request(Net::HTTP::Get.new(uri.request_uri))
     return response
 end
@@ -78,5 +80,5 @@ def test(ff_username)
 end
 
 # get_captcha()
-check_username_exists('thetheo')
-test('thetheo')
+check_username_exists('bli@bla.fr')
+# test('thetheo')
