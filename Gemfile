@@ -1,4 +1,4 @@
-# source 'https://rubygems.org'
+source 'https://rubygems.org'
 gem 'base32'
 group :test do
     gem 'rake'
