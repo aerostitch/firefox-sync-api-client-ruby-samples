@@ -90,7 +90,7 @@ class Ff_sync_user_api_client < Test::Unit::TestCase
 
     # Checks that the login exists returns the right thing
     #
-    def test_check_login_exists()
+    def test_login_exists()
         puts "[INFO] Testing the login_exists? function"
         user_name = 'dummy_login_wont_work'
 
@@ -104,5 +104,27 @@ class Ff_sync_user_api_client < Test::Unit::TestCase
         assert(ff_uac.login_exists?('herlantj@gmail.com'))
     end
 
+
+    # Checks that the get_captcha returns correctly a page
+    # containing a lint to the google captcha api
+    #
+    def test_get_captcha()
+        puts "[INFO] Testing the get_captcha function"
+        user_name = 'dummy_login'
+
+        ff_uac = Firefox_sync_user_api_client.new(user_name)
+        assert_match('https://www.google.com/recaptcha/api', ff_uac.get_captcha())
+    end
+
+
+
+
+    "https://www.google.com/recaptcha"
+    #TODO:
+    # Write tests for:
+    #  - ff_user_api_build_uri
+    #  - ff_user_api_proceed_get_request
+    #  - ff_misc_api_build_uri
+    #  - ff_user_api_proceed_get_request
 end
 

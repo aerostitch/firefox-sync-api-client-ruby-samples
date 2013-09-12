@@ -5,12 +5,10 @@ require "uri"
 require "digest/sha1"   # Required by encrypt_user_login() function
 require "base32"        # requires to install gem base32
 
-# TODO:
-# I have to test method used at:
-# https://github.com/iivvoo/Firefox-sync-example/blob/master/client.py
-# and
-# https://github.com/mikerowehl/firefox-sync-client-php/blob/master/sync.php
-
+# Class that talks to the user service of the Firefox Sync API
+# It also talks to the misc service as it is used by the user API
+# Perhaps this last service will be in a separate class if needed one day
+#
 class Firefox_sync_user_api_client
 
     attr_reader :ff_srv_scheme, :ff_server, :ff_user_api_svc, :ff_misc_api_svc,
@@ -33,8 +31,8 @@ class Firefox_sync_user_api_client
         @http_proxy_password = http_proxy_password
     end
     
-    # This function builds the uri to call for the various user API functions
-    # of Firefox sync
+    # This function builds the final uri for the various user service functions
+    # of Firefox sync API
     #
     def ff_user_api_build_uri(enc_username = @encrypted_login, command = '')
         uri_to_parse = "#@ff_srv_scheme#@ff_server/#@ff_user_api_svc/"+
@@ -43,10 +41,13 @@ class Firefox_sync_user_api_client
         URI.parse(uri_to_parse)
     end
 
-    # Build the uri and processes the GET request for the firefox user API
-    def ff_user_api_proceed_get_request(ff_enc_username = @encrypted_login, ff_further_instructions = '')
+    # Builds the uri and processes the GET request for the user service
+    # of Firefox sync API
+    #
+    def ff_user_api_proceed_get_request(ff_enc_username = @encrypted_login,
+                                        ff_commands = '')
         # Gets the uri
-        uri = ff_user_api_build_uri(ff_enc_username, ff_further_instructions)
+        uri = ff_user_api_build_uri(ff_enc_username, ff_commands)
         # Proceed the GET request using a proxy if configured
         proceed_get_request(uri)
     end
@@ -56,44 +57,47 @@ class Firefox_sync_user_api_client
     #
     def login_exists?(ff_username = @user_login)
         enc_username = encrypt_user_login(ff_username)
-        response = ff_user_api_proceed_get_request(enc_username,'')
-        raise IOError, "HTTP request returned a code #{response.code} error" unless response.code == '200'
-        (response.body == '1') ? true : false
+        rsp = ff_user_api_proceed_get_request(enc_username,'')
+        raise IOError, "HTTP return code: #{rsp.code}" unless rsp.code == '200'
+        (rsp.body == '1') ? true : false
     end
 
 
 
 
 
+    # ****************** Functions relative to misc service ******************
 
+    # This function builds the final uri for the various misc service functions
+    # of Firefox sync API
     #
-    # Functions bellow this point have not been completely adapted to a class structure
+    def ff_misc_api_build_uri(command)
+        uri_to_parse = "#@ff_srv_scheme#@ff_server/#@ff_misc_api_svc/"+
+                       "#@ff_misc_api_version/#{command}"
+        URI.parse(uri_to_parse)
+    end
+
+    # Builds the uri and processes the GET request for the misc service
+    # of Firefox sync API
+    #
+    def ff_misc_api_proceed_get_request(ff_commands = '')
+        # Gets the uri
+        uri = ff_misc_api_build_uri(ff_commands)
+        # Proceed the GET request using a proxy if configured
+        proceed_get_request(uri)
+    end
+ 
+    # Gets the captcha required for some user functionalities
     #
     def get_captcha()
         # The captcha will be required to create a user
-        ff_api_svc = "/captcha_html"
-        uri_to_parse = "#@ff_srv_scheme#@ff_server/#@ff_misc_api_svc/"+
-            "#@ff_misc_api_version#{ff_api_svc}"
-        uri = URI.parse(uri_to_parse)
-        # Proceed the request
-        # if(@http_proxy_uri.nil? or @http_proxy_uri.size == 0)
-        #     http = Net::HTTP::Proxy(uri.host, uri.port, @http_proxy_uri, @http_proxy_port)
-        # else
-            http = Net::HTTP.new(uri.host, uri.port)
-        # end
-        http.use_ssl = true if uri.scheme == 'https'
-        response = http.request(Net::HTTP::Get.new(uri.request_uri))
-        puts response.code
-        puts response.body
+        ff_api_svc = 'captcha_html'
+        rsp = ff_misc_api_proceed_get_request(ff_api_svc)
+        raise IOError, "HTTP return code: #{rsp.code}" unless rsp.code == '200'
+        rsp.body
     end
     
     
-    def test(ff_username)
-        response = ff_user_api_proceed_get_request(ff_username, 'storage/crypto/keys')
-        puts response.code
-        puts response.body
-    end
-
     # ******************** Private functions definition ********************
     private
 

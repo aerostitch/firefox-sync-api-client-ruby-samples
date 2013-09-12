@@ -26,3 +26,9 @@ Main resources:
 NOTE:
 As I am not an experienced programmer and that it's my first ruby scripts
 if you have remarks on the code in a whole, please tell me!
+
+
+Other interesting links:
+ * python implementation of a client for this API: https://github.com/iivvoo/Firefox-sync-example/blob/master/client.py
+ * php implementation of a client for this API: https://github.com/mikerowehl/firefox-sync-client-php/blob/master/sync.php
+
