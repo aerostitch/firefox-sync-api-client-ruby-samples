@@ -9,9 +9,19 @@ for each API provided by firefox sync.
 
 Organization:
  * At the root level, one file for each class:
-    * firefox_sync_user_api_client.rb is for the user API
+    * "firefox_sync_user_api_client.rb" is for the user service of the API
  * In the "test" folder, the unit test files corresponding to the files 
    available at the root level
+ * The "Rakefile" only runs the unit tests
+ * ".travis.yml" and "Gemfile" are used by travis-ci builds
+
+
+Main resources:
+ * API user service (aka registration service): https://docs.services.mozilla.com/reg/
+ * API Storage service: https://docs.services.mozilla.com/storage/
+ * Response codes common to all the services: https://docs.services.mozilla.com/respcodes.html
+ * Sync client documentation: https://docs.services.mozilla.com/sync/index.html
+
 
 NOTE:
 As I am not an experienced programmer and that it's my first ruby scripts
