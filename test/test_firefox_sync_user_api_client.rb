@@ -38,8 +38,8 @@ class Ff_sync_user_api_client < Test::Unit::TestCase
     #
     def test_init_with_proxy_noauth()
         puts "[INFO] Testing constructor with non authenticated proxy"
-        user_name = 'HelliHello'
-        encrypted_user_name = "zfb4oykz7gpe43qkesxjl7j2vn6dcd3u"
+        user_name = 'T@tIsAwsome!'
+        encrypted_user_name = "pm6usd2gi2bsa545vvftssf6qaq6qswx"
         sample_proxy = "sample.proxy.com"
         sample_proxy_port = 8081
 
@@ -64,8 +64,8 @@ class Ff_sync_user_api_client < Test::Unit::TestCase
     #
     def test_init_with_proxy_auth()
         puts "[INFO] Testing constructor with an authenticated proxy"
-        user_name = 'HelliHello'
-        encrypted_user_name = "zfb4oykz7gpe43qkesxjl7j2vn6dcd3u"
+        user_name = 'AintGotNoName...'
+        encrypted_user_name = "houa7wyenqyleyp4h36vn5vs7d7osyfr"
         sample_proxy = "sample.proxy.com"
         sample_proxy_port = 8081
         sample_proxy_user = "mydomain\\myuser"
@@ -87,5 +87,22 @@ class Ff_sync_user_api_client < Test::Unit::TestCase
         # Ensures the proxy password is not available from outside the class
         assert_raise(NoMethodError){empty_class.http_proxy_password}
     end
+
+    # Checks that the login exists returns the right thing
+    #
+    def test_check_login_exists()
+        puts "[INFO] Testing the login_exists? function"
+        user_name = 'dummy_login_wont_work'
+
+        ff_uac = Firefox_sync_user_api_client.new(user_name)
+        
+        puts "[INFO] Testing login_exists? without parameters"
+        # Should take provided username as defaut
+        assert(!(ff_uac.login_exists?))
+
+        puts "[INFO] Testing login_exists? with a custom login"
+        assert(ff_uac.login_exists?('herlantj@gmail.com'))
+    end
+
 end
 
