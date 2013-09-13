@@ -82,7 +82,26 @@ class Firefox_sync_user_api_client
         rsp.body
     end
 
-
+    # Requests a password reset email be mailed to the email address on file.
+    # Returns 'success' if an email was successfully sent.
+    # 
+    # If captchas are enabled for the site, requires captcha-challenge 
+    # and captcha-response parameters.
+    #
+    def require_password_reset()
+        rsp = ff_user_api_proceed_get_request(@encrypted_login,'password_reset')
+        unless rsp.code == '200'
+            err_msg = "HTTP return code: #{rsp.code}"
+            err_msg += " (problems with looking up the user 
+                or sending the email)" if rsp.code == '503'
+            if rsp.code == '400'
+                err_msg += " (#{rsp.body})"
+            end
+            raise IOError, err_msg
+        end
+        raise IOError, "API returned #{rsp.body}" unless rsp.body == 'success'
+        rsp.body 
+    end
 
 
     # ****************** Functions relative to misc service ******************

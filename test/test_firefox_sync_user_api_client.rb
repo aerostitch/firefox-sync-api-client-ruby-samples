@@ -125,6 +125,14 @@ class Ff_sync_user_api_client < Test::Unit::TestCase
         assert_raise( IOError ) { ff_uac.get_weave_node() }
     end
 
+    def test_require_password_reset()
+        puts "[INFO] Testing the require_password_reset function"
+        # ff_uac = Firefox_sync_user_api_client.new('herlantj@gmail.com')
+        # assert_match(/https:\/\/.*\.services\.mozilla\.com\//,ff_uac.get_weave_node())
+        ff_uac = Firefox_sync_user_api_client.new('dummy_login')
+        assert_raise( IOError ) { ff_uac.get_weave_node() }
+        ff_uac.get_weave_node()
+    end
 
     #TODO:
     # Write tests for:
