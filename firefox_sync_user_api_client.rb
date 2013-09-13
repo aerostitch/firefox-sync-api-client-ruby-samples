@@ -95,7 +95,9 @@ class Firefox_sync_user_api_client
             err_msg += " (problems with looking up the user 
                 or sending the email)" if rsp.code == '503'
             if rsp.code == '400'
-                err_msg += " (#{rsp.body})"
+                err_msg += " (Incorrect or missing captcha)" if rsp.body == '2'
+                err_msg += " (Incorrect or missing username)" if rsp.body == '3'
+                err_msg += " (No email address on file)" if rsp.body == '12'
             end
             raise IOError, err_msg
         end

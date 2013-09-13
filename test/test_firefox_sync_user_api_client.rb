@@ -9,6 +9,9 @@
 require 'test/unit'
 require_relative '../firefox_sync_user_api_client.rb'
 
+# This constant should be filled with a correct firefox sync login
+FF_SYNC_LOGIN = 'herlantj@gmail.com'
+
 class Ff_sync_user_api_client < Test::Unit::TestCase
 
     # As the proxy is optionnal, we test the constructor without proxy
@@ -101,7 +104,7 @@ class Ff_sync_user_api_client < Test::Unit::TestCase
         assert(!(ff_uac.login_exists?))
 
         puts "[INFO] Testing login_exists? with a custom login"
-        assert(ff_uac.login_exists?('herlantj@gmail.com'))
+        assert(ff_uac.login_exists?(FF_SYNC_LOGIN))
     end
 
 
@@ -119,7 +122,7 @@ class Ff_sync_user_api_client < Test::Unit::TestCase
     #
     def test_get_weave_node()
         puts "[INFO] Testing the get_weave_node function"
-        ff_uac = Firefox_sync_user_api_client.new('herlantj@gmail.com')
+        ff_uac = Firefox_sync_user_api_client.new(FF_SYNC_LOGIN)
         assert_match(/https:\/\/.*\.services\.mozilla\.com\//,ff_uac.get_weave_node())
         ff_uac = Firefox_sync_user_api_client.new('dummy_login')
         assert_raise( IOError ) { ff_uac.get_weave_node() }
@@ -127,11 +130,12 @@ class Ff_sync_user_api_client < Test::Unit::TestCase
 
     def test_require_password_reset()
         puts "[INFO] Testing the require_password_reset function"
-        # ff_uac = Firefox_sync_user_api_client.new('herlantj@gmail.com')
-        # assert_match(/https:\/\/.*\.services\.mozilla\.com\//,ff_uac.get_weave_node())
+        # Incorrect of missing user
         ff_uac = Firefox_sync_user_api_client.new('dummy_login')
-        assert_raise( IOError ) { ff_uac.get_weave_node() }
-        ff_uac.get_weave_node()
+        assert_raise( IOError ) { ff_uac.require_password_reset() }
+        # Incorrect captcha, that's the best we can do here
+        ff_uac = Firefox_sync_user_api_client.new(FF_SYNC_LOGIN)
+        assert_raise( IOError ) { ff_uac.require_password_reset() }
     end
 
     #TODO:
