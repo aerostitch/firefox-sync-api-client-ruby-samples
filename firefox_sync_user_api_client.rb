@@ -62,6 +62,25 @@ class Firefox_sync_user_api_client
         (rsp.body == '1') ? true : false
     end
 
+    # Gets the node Sync node that the client is located on.
+    # Sync-specific calls should be directed to that node.
+    #
+    # Return value: the node URL, an unadorned (not JSON) string.
+    #
+    # node may be ‘null’ if no node can be assigned at this time,
+    # probably due to sign up throttling.
+    #
+    def get_weave_node()
+        rsp = ff_user_api_proceed_get_request(@encrypted_login,'node/weave')
+        unless rsp.code == '200'
+            err_msg = "HTTP return code: #{rsp.code}"
+            err_msg += " (Mozilla didn't find the node)" if rsp.code == '503'
+            err_msg += " (User not found)" if rsp.code == '404'
+            raise IOError, err_msg
+        end
+        raise IOError, "Mozilla signing servers too busy" if rsp.body == 'null'
+        rsp.body
+    end
 
 
 

@@ -110,16 +110,22 @@ class Ff_sync_user_api_client < Test::Unit::TestCase
     #
     def test_get_captcha()
         puts "[INFO] Testing the get_captcha function"
-        user_name = 'dummy_login'
-
-        ff_uac = Firefox_sync_user_api_client.new(user_name)
+        ff_uac = Firefox_sync_user_api_client.new('')
         assert_match('https://www.google.com/recaptcha/api', ff_uac.get_captcha())
     end
 
+    # Checks that the get_weave_node returns a url
+    # or an IOError if username not found
+    #
+    def test_get_weave_node()
+        puts "[INFO] Testing the get_weave_node function"
+        ff_uac = Firefox_sync_user_api_client.new('herlantj@gmail.com')
+        assert_match(/https:\/\/.*\.services\.mozilla\.com\//,ff_uac.get_weave_node())
+        ff_uac = Firefox_sync_user_api_client.new('dummy_login')
+        assert_raise( IOError ) { ff_uac.get_weave_node() }
+    end
 
 
-
-    "https://www.google.com/recaptcha"
     #TODO:
     # Write tests for:
     #  - ff_user_api_build_uri
