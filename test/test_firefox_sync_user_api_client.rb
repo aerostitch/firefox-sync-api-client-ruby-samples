@@ -5,17 +5,7 @@
 #
 # Requires minitest gem. Installed by default with ruby on debian but
 # you have to do a "sudo yum install rubygem-minitest" on fedora to install it
-
-
-# This allows to get the require_relative function for ruby versions bellow 1.9
-unless Kernel.respond_to?(:require_relative)
-  module Kernel
-    def require_relative(path)
-      require File.join(File.dirname(caller[0]), path.to_str)
-    end
-  end
-end
-
+#
 require 'test/unit'
 require_relative '../firefox_sync_user_api_client.rb'
 
