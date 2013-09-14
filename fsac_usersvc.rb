@@ -116,6 +116,98 @@ class FSAC_usersvc
         rsp.body 
     end
 
+    # Requests that an account be created for username.
+    #
+    # The body is a JSON mapping and should include:
+    #
+    # password: the password to be associated with the account.
+    # e-mail: Email address associated with the account.
+    # captcha-challenge: The challenge string from the captcha.
+    # captcha-response: The response to the captcha.
+    #
+    # PUT https://server/pathname/version/username
+    #
+    # Possible errors:
+    #
+    # 503: there was an error creating the reset code
+    # 400: see @tools.fsac_resp_codes[rsp.body]
+    #
+    def create_account()
+        raise NoMethodError, "Not implemented yet..."
+    end
+
+
+    # Changes the password associated with the account to the value specified in
+    # the POST body.
+    #
+    # NOTE: Requires basic authentication with the username and (current)
+    # password associated with the account. The auth username must match the
+    # username in the path.
+    #
+    # Alternately, a valid X-Weave-Password-Reset header can be used, if it
+    # contains a code previously obtained from the server.
+    #
+    # Return values: "success" on success.
+    #
+    # POST https://server/pathname/version/username/password
+    #
+    # Possible errors:
+    #
+    # 400: 7 (Missing password field)
+    # 400: see @tools.fsac_resp_codes[rsp.body]
+    # 404: the user does not exists in the database
+    # 503: there was an error updating the password
+    # 401: authentication failed
+    #
+    def change_password(old_password, new_password)
+        raise NoMethodError, "Not implemented yet..."
+    end
+
+    # Changes the email associated with the account to the value specified in
+    # the POST body.
+    #
+    # NOTE: Requires basic authentication with the username and password
+    # associated with the account. The auth username must match the username in
+    # the path.
+    #
+    # Alternately, a valid X-Weave-Password-Reset header can be used, if it
+    # contains a code previously obtained from the server.
+    #
+    # Return values: The user email on success.
+    #
+    # POST https://server/pathname/version/username/email
+    #
+    # Possible errors:
+    #
+    # 400: 12 (No email address on file)
+    # 404: the user does not exists in the database
+    # 503: there was an error updating the email
+    # 401: authentication failed
+    #
+    def change_email(new_email)
+        raise NoMethodError, "Not implemented yet..."
+    end
+
+    # Deletes the user account.
+    #
+    # NOTE: Requires simple authentication with the username and password
+    # associated with the account. The auth username must match the username in
+    # the path.
+    #
+    # Return value: 0 on success
+    #
+    # DELETE https://server/pathname/version/username
+    #
+    # Possible errors:
+    #
+    # 503: there was an error removing the user
+    # 404: the user does not exist in the database
+    # 401: authentication failed
+    #
+    def delete_user_account()
+        raise NoMethodError, "Not implemented yet..."
+    end
+
 
     # ****************** Functions relative to misc service ******************
 
