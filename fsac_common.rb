@@ -58,17 +58,17 @@ class FSAC_common
         http.use_ssl = true if uri_to_get.scheme == 'https'
 
         # Define which type of request will be processed
-        if http_method = :http_get
+        if http_method == :http_get
             req_obj = Net::HTTP::Get.new(uri_to_get.request_uri)
-        elsif http_method = :http_post
+        elsif http_method == :http_post
             req_obj = Net::HTTP::Post.new(uri_to_get.request_uri)
-        elsif http_method = :http_put
+        elsif http_method == :http_put
             req_obj = Net::HTTP::Put.new(uri_to_get.request_uri)
-        elsif http_method = :http_delete
+        elsif http_method == :http_delete
             req_obj = Net::HTTP::Delete.new(uri_to_get.request_uri)
-        elsif http_method = :http_head
+        elsif http_method == :http_head
             req_obj = Net::HTTP::Head.new(uri_to_get.request_uri)
-        elsif http_method = :http_trace
+        elsif http_method == :http_trace
             req_obj = Net::HTTP::Trace.new(uri_to_get.request_uri)
         else
             raise StandardError, "Unsupported HTTP method (#{http_method})"
