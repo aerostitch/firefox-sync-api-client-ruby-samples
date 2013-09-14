@@ -9,7 +9,7 @@
 # NOTE: The "FSAC" abreviation stands for "Firefox Sync Api Client".
 #
 require 'test/unit'
-require_relative '../firefox_sync_user_api_client.rb'
+require_relative '../fsac_usersvc.rb'
 
 # This constant should be filled with a correct firefox sync login
 FF_SYNC_LOGIN = 'herlantj@gmail.com'
