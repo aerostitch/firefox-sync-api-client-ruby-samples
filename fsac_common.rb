@@ -22,6 +22,7 @@ require "base32"        # requires to install gem base32
 class FSAC_common
 
     attr_reader :http_proxy_url, :http_proxy_port, :http_proxy_user
+    attr_accessor :mozilla_status_url
 
     def initialize(http_proxy_url = nil, http_proxy_port = 8080,
                    http_proxy_user = nil, http_proxy_password = nil)
@@ -29,6 +30,7 @@ class FSAC_common
         @http_proxy_port = http_proxy_port
         @http_proxy_user = http_proxy_user
         @http_proxy_password = http_proxy_password
+        @mozilla_status_url = "https://services.mozilla.com/status/"
     end
 
     # Defining Firefox Sync API standard response code's corresponding friendly
@@ -67,7 +69,20 @@ class FSAC_common
         Base32::encode(Digest::SHA1.digest(login.downcase())).downcase()
     end
 
-    # This function processes the GET request
+    # Gets the status page of Mozilla services platform
+    # Cannot be parsed using XML because Mozilla's web page does not
+    # close properly its meta and div tags...
+    #
+    # Returns an array with the main title 1st and the explanations @2nd
+    #
+    def get_moz_platform_status()
+        xml_data = process_get_request(URI.parse(@mozilla_status_url)).body
+        extractor = /<div class="title">\s*(.*?)\s*<\/div>.*?<p>\s*(.*?)\s*<\/p>/m
+        xml_data.scan(extractor)[0]
+    end
+
+
+    # This function processes the GET requests
     #
     def process_get_request(uri_to_get)
         process_http_request(:http_get, uri_to_get)
@@ -106,7 +121,5 @@ class FSAC_common
         http.request(req_obj)
     end
 
-    # TODO:
-    # Integrate response codes here
 end
 
