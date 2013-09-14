@@ -6,13 +6,15 @@
 # Requires minitest gem. Installed by default with ruby on debian but
 # you have to do a "sudo yum install rubygem-minitest" on fedora to install it
 #
+# NOTE: The "FSAC" abreviation stands for "Firefox Sync Api Client".
+#
 require 'test/unit'
 require_relative '../firefox_sync_user_api_client.rb'
 
 # This constant should be filled with a correct firefox sync login
 FF_SYNC_LOGIN = 'herlantj@gmail.com'
 
-class Ff_sync_user_api_client < Test::Unit::TestCase
+class FSAC_usersvc_test < Test::Unit::TestCase
 
     # As the proxy is optionnal, we test the constructor without proxy
     #
@@ -21,7 +23,7 @@ class Ff_sync_user_api_client < Test::Unit::TestCase
         user_name = 'HelliHello'
         encrypted_user_name = "zfb4oykz7gpe43qkesxjl7j2vn6dcd3u"
 
-        empty_class = Firefox_sync_user_api_client.new(user_name)
+        empty_class = FSAC_usersvc.new(user_name)
         assert_equal(empty_class.ff_srv_scheme, 'https://')
         assert_equal(empty_class.ff_server, 'auth.services.mozilla.com')
         assert_equal(empty_class.ff_user_api_svc, 'user')
@@ -46,7 +48,7 @@ class Ff_sync_user_api_client < Test::Unit::TestCase
         sample_proxy = "sample.proxy.com"
         sample_proxy_port = 8081
 
-        empty_class = Firefox_sync_user_api_client.new(user_name, sample_proxy,
+        empty_class = FSAC_usersvc.new(user_name, sample_proxy,
             sample_proxy_port)
         assert_equal(empty_class.ff_srv_scheme, 'https://')
         assert_equal(empty_class.ff_server, 'auth.services.mozilla.com')
@@ -74,7 +76,7 @@ class Ff_sync_user_api_client < Test::Unit::TestCase
         sample_proxy_user = "mydomain\\myuser"
         sample_proxy_pwd = "APrettyLittlePwd"
 
-        empty_class = Firefox_sync_user_api_client.new(user_name, sample_proxy,
+        empty_class = FSAC_usersvc.new(user_name, sample_proxy,
             sample_proxy_port, sample_proxy_user, sample_proxy_pwd)
         assert_equal(empty_class.ff_srv_scheme, 'https://')
         assert_equal(empty_class.ff_server, 'auth.services.mozilla.com')
@@ -97,7 +99,7 @@ class Ff_sync_user_api_client < Test::Unit::TestCase
         puts "[INFO] Testing the login_exists? function"
         user_name = 'dummy_login_wont_work'
 
-        ff_uac = Firefox_sync_user_api_client.new(user_name)
+        ff_uac = FSAC_usersvc.new(user_name)
         
         puts "[INFO] Testing login_exists? without parameters"
         # Should take provided username as defaut
@@ -113,7 +115,7 @@ class Ff_sync_user_api_client < Test::Unit::TestCase
     #
     def test_get_captcha()
         puts "[INFO] Testing the get_captcha function"
-        ff_uac = Firefox_sync_user_api_client.new('')
+        ff_uac = FSAC_usersvc.new('')
         assert_match('https://www.google.com/recaptcha/api', ff_uac.get_captcha())
     end
 
@@ -122,19 +124,19 @@ class Ff_sync_user_api_client < Test::Unit::TestCase
     #
     def test_get_weave_node()
         puts "[INFO] Testing the get_weave_node function"
-        ff_uac = Firefox_sync_user_api_client.new(FF_SYNC_LOGIN)
+        ff_uac = FSAC_usersvc.new(FF_SYNC_LOGIN)
         assert_match(/https:\/\/.*\.services\.mozilla\.com\//,ff_uac.get_weave_node())
-        ff_uac = Firefox_sync_user_api_client.new('dummy_login')
+        ff_uac = FSAC_usersvc.new('dummy_login')
         assert_raise( IOError ) { ff_uac.get_weave_node() }
     end
 
     def test_require_password_reset()
         puts "[INFO] Testing the require_password_reset function"
         # Incorrect of missing user
-        ff_uac = Firefox_sync_user_api_client.new('dummy_login')
+        ff_uac = FSAC_usersvc.new('dummy_login')
         assert_raise( IOError ) { ff_uac.require_password_reset() }
         # Incorrect captcha, that's the best we can do here
-        ff_uac = Firefox_sync_user_api_client.new(FF_SYNC_LOGIN)
+        ff_uac = FSAC_usersvc.new(FF_SYNC_LOGIN)
         assert_raise( IOError ) { ff_uac.require_password_reset() }
     end
 

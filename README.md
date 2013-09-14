@@ -6,6 +6,8 @@ for each API provided by firefox sync.
 
 Requires ruby 1.9 minimum with base32 gem to work.
 
+The "FSAC" abreviation stands for "Firefox Sync Api Client".
+
 Organization:
  * At the root level, one file for each class:
     * "firefox_sync_user_api_client.rb" is for the user service of the API

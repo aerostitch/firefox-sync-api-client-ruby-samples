@@ -1,23 +1,28 @@
 #!/usr/bin/env ruby
+#
+# NOTE: The "FSAC" abreviation stands for "Firefox Sync Api Client".
+#
 
 require "net/http"
 require "uri"
 require "digest/sha1"   # Required by encrypt_user_login() function
 require "base32"        # requires to install gem base32
 
+# This class contains functions that are common to the various services 
+# of the Firefox Sync API
 #
-class Firefox_sync_common
+class FSAC_common
 
     # This function encrypts the provided login in the way
     # the firefox API expects to get it
     #
-    def Firefox_sync_common.encrypt_user_login(login)
+    def FSAC_common.encrypt_user_login(login)
         Base32::encode(Digest::SHA1.digest(login.downcase())).downcase()
     end
 
     # This function processes the GET request
     #
-    def Firefox_sync_common.proceed_get_request(uri_to_get,
+    def FSAC_common.proceed_get_request(uri_to_get,
                     http_proxy_url = nil, http_proxy_port = nil,
                     http_proxy_user = nil, http_proxy_password = nil)
         # Proceed the GET request using a proxy if configured
@@ -31,5 +36,8 @@ class Firefox_sync_common
         http.use_ssl = true if uri_to_get.scheme == 'https'
         http.request(Net::HTTP::Get.new(uri_to_get.request_uri))
     end
+
+    # TODO:
+    # Integrate response codes here
 end
 
