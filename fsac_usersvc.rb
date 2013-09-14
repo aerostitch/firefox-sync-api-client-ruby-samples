@@ -12,8 +12,7 @@ require_relative './fsac_common.rb'
 class FSAC_usersvc
 
     attr_reader :ff_srv_scheme, :ff_server, :ff_user_api_svc, :ff_misc_api_svc,
-        :ff_user_api_version, :ff_misc_api_version, :user_login,
-        :encrypted_login, :http_proxy_uri, :http_proxy_port, :http_proxy_user
+        :ff_user_api_version, :ff_misc_api_version, :user_login, :encrypted_login
 
     def initialize(user_login, http_proxy_uri = nil, http_proxy_port = 8080,
                         http_proxy_user = nil, http_proxy_password = nil)
@@ -23,12 +22,24 @@ class FSAC_usersvc
         @ff_misc_api_svc = 'misc'
         @ff_user_api_version = '1.0'
         @ff_misc_api_version = '1.0'
+        @tools = FSAC_common.new(http_proxy_uri, http_proxy_port,
+                                 http_proxy_user, http_proxy_password)
         @user_login = user_login.downcase()     # needed for encryption
-        @encrypted_login = FSAC_common.encrypt_user_login(@user_login)
-        @http_proxy_uri = http_proxy_uri
-        @http_proxy_port = http_proxy_port
-        @http_proxy_user = http_proxy_user
-        @http_proxy_password = http_proxy_password
+        @encrypted_login = @tools.encrypt_user_login(@user_login)
+    end
+
+    # Defining getters for encapsulated FSA_common attributes
+    #
+    def http_proxy_uri
+        @tools.http_proxy_url
+    end
+
+    def http_proxy_port
+        @tools.http_proxy_port
+    end
+
+    def http_proxy_user
+        @tools.http_proxy_user
     end
     
     # This function builds the final uri for the various user service functions
@@ -49,15 +60,14 @@ class FSAC_usersvc
         # Gets the uri
         uri = ff_user_api_build_uri(ff_enc_username, ff_commands)
         # Proceed the GET request using a proxy if configured
-        FSAC_common.proceed_get_request(uri, @http_proxy_url,
-            @http_proxy_port, @http_proxy_user, @http_proxy_password)
+        @tools.process_get_request(uri)
     end
 
     # This function checks if the given login exists on firefox sync
     # If no argument provided, the @user_login instance variable is checked
     #
     def login_exists?(ff_username = @user_login)
-        enc_username = FSAC_common.encrypt_user_login(ff_username)
+        enc_username = @tools.encrypt_user_login(ff_username)
         rsp = ff_user_api_proceed_get_request(enc_username,'')
         raise IOError, "HTTP return code: #{rsp.code}" unless rsp.code == '200'
         (rsp.body == '1') ? true : false
@@ -125,8 +135,7 @@ class FSAC_usersvc
         # Gets the uri
         uri = ff_misc_api_build_uri(ff_commands)
         # Proceed the GET request using a proxy if configured
-        FSAC_common.proceed_get_request(uri, @http_proxy_url,
-            @http_proxy_port, @http_proxy_user, @http_proxy_password)
+        @tools.process_get_request(uri)
     end
 
     # Gets the captcha required for some user functionalities
