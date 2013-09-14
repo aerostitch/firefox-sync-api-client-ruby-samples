@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# encoding: utf-8
 #
 # Test class for the FSAC_common class
 # available at https://github.com/aerostitch/firefox-sync-api-client-ruby-samples

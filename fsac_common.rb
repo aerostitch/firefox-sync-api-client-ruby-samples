@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# encoding: utf-8
 #
 # NOTE: The "FSAC" abreviation stands for "Firefox Sync Api Client".
 #
@@ -89,9 +90,10 @@ class FSAC_common
     end
 
     # This function processes the HTTP request
-    # body argument is used for put and post requests
+    # content argument is used for put and post requests
     #
-    def process_http_request(http_method = :http_get, uri_to_get, body = nil)
+    def process_http_request(http_method = :http_get, uri_to_get = nil,
+                             content = nil)
         # Process the HTTP request using a proxy if configured
         if(@http_proxy_url.nil? or @http_proxy_url.size == 0)
             http = Net::HTTP::new(uri_to_get.host, uri_to_get.port,
@@ -119,7 +121,7 @@ class FSAC_common
             raise StandardError, "Unsupported HTTP method (#{http_method})"
         end
 
-        http.request(req_obj, body)
+        http.request(req_obj, content)
     end
 
 end

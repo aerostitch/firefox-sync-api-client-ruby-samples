@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# encoding: utf-8
 #
 # Test class for the Firefox_sync_api_client class
 # available at https://github.com/aerostitch/firefox-sync-api-client-ruby-samples
@@ -12,7 +13,7 @@ require 'test/unit'
 require_relative '../fsac_usersvc.rb'
 
 # This constant should be filled with a correct firefox sync login
-FF_SYNC_LOGIN = 'herlantj@gmail.com'
+FF_SYNC_LOGIN = '<put_your_email_here!>'
 
 class FSAC_usersvc_test < Test::Unit::TestCase
 
