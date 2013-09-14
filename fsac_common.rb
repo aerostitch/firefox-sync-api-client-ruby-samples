@@ -8,7 +8,7 @@ require "uri"
 require "digest/sha1"   # Required by encrypt_user_login() function
 require "base32"        # requires to install gem base32
 
-# Enums used ot identify which http method to use
+# Enums used to identify which http method to use
 :http_head
 :http_get
 :http_post
@@ -29,6 +29,35 @@ class FSAC_common
         @http_proxy_port = http_proxy_port
         @http_proxy_user = http_proxy_user
         @http_proxy_password = http_proxy_password
+    end
+
+    # Defining Firefox Sync API standard response code's corresponding friendly
+    # human readable error message. Those response codes are sent by the API and
+    # will be put in the body of the response.
+    #
+    @@fsac_resp_codes = {
+        '1'  => 'Illegal method/protocol',
+        '2'  => 'Incorrect/missing CAPTCHA',
+        '3'  => 'Invalid/missing username',
+        '4'  => "Attempt to overwrite data that can't be overwritten " +
+                "(such as creating a user ID that already exists)",
+        '5'  => 'User ID does not match account in path',
+        '6'  => 'JSON parse failure',
+        '7'  => 'Missing password field',
+        '8'  => 'Invalid Weave Basic Object',
+        '9'  => 'Requested password not strong enough',
+        '10' => 'Invalid/missing password reset code',
+        '11' => 'Unsupported function',
+        '12' => 'No email address on file',
+        '13' => 'Invalid collection',
+        '14' => 'User over quota',
+        '15' => 'The email does not match the username',
+        '16' => 'Client upgrade required'
+    }
+ 
+    # Getter of the @@fsac_resp_codes hash
+    def fsac_resp_codes
+        @@fsac_resp_codes
     end
 
     # This function encrypts the provided login in the way

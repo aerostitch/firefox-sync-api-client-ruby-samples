@@ -106,9 +106,9 @@ class FSAC_usersvc
             err_msg += " (problems with looking up the user 
                 or sending the email)" if rsp.code == '503'
             if rsp.code == '400'
-                err_msg += " (Incorrect or missing captcha)" if rsp.body == '2'
-                err_msg += " (Incorrect or missing username)" if rsp.body == '3'
-                err_msg += " (No email address on file)" if rsp.body == '12'
+                if (@tools.fsac_resp_codes).has_key?(rsp.body)
+                    err_msg += " ("+ @tools.fsac_resp_codes[rsp.body] +")"
+                end
             end
             raise IOError, err_msg
         end
