@@ -17,6 +17,13 @@ Organization:
  * The "Rakefile" only runs the unit tests
  * ".travis.yml" and "Gemfile" are used by travis-ci builds
 
+NOTE: For people who would like to work on the version 2.0 of the storage
+service of the sync API, you have to know that it is based on Sagrada. I had a
+hard time looking for how it works and trying to find out why I couldn't find IP
+for accessing https://directory.services.mozilla.com/discover . I finally
+learned on IRC that Sanagra has never been released (I'm speaking now on
+September, the 14th 2013) and stills stays as a specification. So it seems
+useless trying to use this version 2.0 of the storage service of the API. :(
 
 Main resources:
  * API user service (aka registration service): https://docs.services.mozilla.com/reg/

@@ -85,15 +85,17 @@ class FSAC_common
 
     # This function processes the GET requests
     #
-    def process_get_request(uri_to_get)
-        process_http_request(:http_get, uri_to_get)
+    def process_get_request(uri_to_get, auth_usr = nil, auth_pwd = nil)
+        process_http_request(:http_get, uri_to_get, nil, auth_usr, auth_pwd)
     end
 
     # This function processes the HTTP request
     # content argument is used for put and post requests
+    # auth_usr and auth_pwd are required for basic authentication
+    # if auth_usr is nil, no authentication is done
     #
     def process_http_request(http_method = :http_get, uri_to_get = nil,
-                             content = nil)
+                             content = nil, auth_usr = nil, auth_pwd = nil)
         # Process the HTTP request using a proxy if configured
         if(@http_proxy_url.nil? or @http_proxy_url.size == 0)
             http = Net::HTTP::new(uri_to_get.host, uri_to_get.port,
@@ -120,6 +122,8 @@ class FSAC_common
         else
             raise StandardError, "Unsupported HTTP method (#{http_method})"
         end
+
+        req_obj.basic_auth(auth_usr, auth_pwd) unless auth_usr.nil?
 
         http.request(req_obj, content)
     end
