@@ -1,7 +1,11 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
 
-require "uri"
+require 'uri'
+require 'json'
+require 'base64'
+require 'base32'
+require 'openssl'
 require_relative './fsac_common.rb'
 require_relative './fsac_usersvc.rb'
 
@@ -15,8 +19,9 @@ class FSAC_storagesvc
   
   attr_reader :user_obj
 
-  def initialize(user_login, user_password, http_proxy_uri = nil, http_proxy_port = 8080,
-            http_proxy_user = nil, http_proxy_password = nil)
+  def initialize(user_login, user_password, passphrase,
+                 http_proxy_uri = nil, http_proxy_port = 8080,
+                 http_proxy_user = nil, http_proxy_password = nil)
     @tools = FSAC_common.new(http_proxy_uri, http_proxy_port,
                  http_proxy_user, http_proxy_password)
     @user_pwd = user_password
@@ -24,6 +29,8 @@ class FSAC_storagesvc
                   http_proxy_uri, http_proxy_port,
                   http_proxy_user, http_proxy_password)
     @node = @user_obj.get_weave_node().sub(/\/$/,'')
+    @encryption_key = encrypt_passphrase(passphrase)
+    @priv_key = get_user_key()
   end
 
   # Defining getters for encapsulated FSA_common attributes
@@ -126,11 +133,56 @@ class FSAC_storagesvc
   #
   def get_collection_info(collection)
     uri = build_uri("storage/#{collection}")
-    @tools.process_get_request(uri, @user_obj.encrypted_login, @user_pwd).body
+    dat = @tools.process_get_request(uri, @user_obj.encrypted_login, @user_pwd).body
+    eval(dat)
     # TODO:
-    # - Decrypt data
     # - Play with the other options available
   end
 
+  def get_subcollection_info(collection, id)
+    uri = build_uri("storage/#{collection}/#{id}")
+    ret = @tools.process_get_request(uri, @user_obj.encrypted_login, @user_pwd).body
+    ret_hash = JSON.parse(ret)
+    payload = JSON.parse(ret_hash['payload'])
+    ciphertxt = Base64.decode64(payload['ciphertext'])
+    iv = Base64.decode64(payload['IV'])
+    decrypt_data(ciphertxt, @priv_key, iv)
+  end
+
+  # Function used to decrypt the data
+  # and also used in the private key discovery process
+  #
+  def decrypt_data(data, private_key, iv)
+    aes = OpenSSL::Cipher::AES.new(256, :CBC)
+    aes.decrypt
+    aes.iv = iv
+    aes.key = private_key
+    aes.update(data) + aes.final
+  end
+
+  # This function gets and decrypts the private key used to encrypt data
+  #
+  def get_user_key()
+    uri = build_uri('storage/crypto/keys')
+    ret = @tools.process_get_request(uri, @user_obj.encrypted_login, @user_pwd).body
+    ret_hash = JSON.parse(ret)
+    payload = JSON.parse(ret_hash['payload'])
+    ciphertxt = Base64.decode64(payload['ciphertext'])
+    iv = Base64.decode64(payload['IV'])
+    priv_elts = JSON.parse(decrypt_data(ciphertxt, @encryption_key, iv))
+    Base64.decode64(priv_elts['default'][0])
+  end
+  
+  # This function is used to encrypt the passphrase to prepare it to decrypt
+  # the data
+  #
+  def encrypt_passphrase(passphrase)
+    digest = OpenSSL::Digest::SHA256.new
+    intermdiate_pass = passphrase.gsub('-', '').gsub('8', 'l').gsub('9', 'o').upcase()
+    pad = ((8 - intermdiate_pass.length % 8) % 8) + intermdiate_pass.length
+    almost_final = intermdiate_pass.ljust(pad,'=')
+    OpenSSL::HMAC.digest(digest, Base32::decode(almost_final), "Sync-AES_256_CBC-HMAC256" +
+                         @user_obj.encrypted_login + "\x01")
+  end
 end
 
