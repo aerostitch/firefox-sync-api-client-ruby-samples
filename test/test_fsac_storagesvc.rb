@@ -20,12 +20,12 @@ puts ac.get_collections_count()
 puts "\n\n"
 puts ac.get_user_quota()
 puts "\n\n"
-pcolz = ac.get_user_collections()
-puts pcolz
+colz = ac.get_user_collections()
+puts colz
 puts "\n\n"
-JSON.parse(pcolz).each do |pcol,tz|
-  colz = ac.get_collection_info(pcol)
-  puts "----> "+ pcol + "  "+ colz.to_s
-  colz.each { |col| puts pcol + "  "+ col + "  "+ 
-    ac.get_subcollection_info(pcol,col)} if pcol != 'crypto'
+JSON.parse(colz).each do |col,tz|
+  idx = ac.get_collection_index(col)
+  puts "----> "+ col + "  "+ idx.to_s
+  col.each { |item| puts col + "  "+ item + "  "+ 
+    ac.get_item_data(col,item)} unless col == 'crypto'
 end

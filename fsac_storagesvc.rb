@@ -131,7 +131,7 @@ class FSAC_storagesvc
   # 
   # GET https://server/pathname/version/username/storage/collection
   #
-  def get_collection_info(collection)
+  def get_collection_index(collection)
     uri = build_uri("storage/#{collection}")
     dat = @tools.process_get_request(uri, @user_obj.encrypted_login, @user_pwd).body
     eval(dat)
@@ -139,7 +139,9 @@ class FSAC_storagesvc
     # - Play with the other options available
   end
 
-  def get_subcollection_info(collection, id)
+  # Gets and decrypts the data for a given item
+  #
+  def get_item_data(collection, id)
     uri = build_uri("storage/#{collection}/#{id}")
     ret = @tools.process_get_request(uri, @user_obj.encrypted_login, @user_pwd).body
     ret_hash = JSON.parse(ret)

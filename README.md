@@ -12,6 +12,7 @@ Organization:
  * At the root level, one file for each class:
     * "fsac_usersvc.rb" is for the user service of the API
     * "fsac_common.rb" is for the functions used in multiple services of the API
+    * "fsac_storagesvc.rb" is for the storage service of the API
  * In the "test" folder, the unit test files corresponding to the files 
    available at the root level
  * The "Rakefile" only runs the unit tests
