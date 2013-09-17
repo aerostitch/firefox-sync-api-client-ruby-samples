@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
 #
-# Test class for the Firefox_sync_api_client class
+# Test class for the FSAC_usersvc class
 # available at https://github.com/aerostitch/firefox-sync-api-client-ruby-samples
 #
 # Requires minitest gem. Installed by default with ruby on debian but

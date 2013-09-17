@@ -15,6 +15,8 @@ Organization:
     * "fsac_storagesvc.rb" is for the storage service of the API
  * In the "test" folder, the unit test files corresponding to the files 
    available at the root level
+ * In the "examples" folder, you will find some scripts examples on how to use
+   the classes exposed here.
  * The "Rakefile" only runs the unit tests
  * ".travis.yml" and "Gemfile" are used by travis-ci builds
 
