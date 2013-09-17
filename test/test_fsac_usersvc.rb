@@ -12,10 +12,43 @@
 require 'test/unit'
 require_relative '../fsac_usersvc.rb'
 
-# This constant should be filled with a correct firefox sync login
-FF_SYNC_LOGIN = '<put_your_email_here!>'
 
 class FSAC_usersvc_test < Test::Unit::TestCase
+
+  @@user_login = nil
+  @@cmptr = nil
+
+  # This function is run befor each tests.
+  # Here make the configuration only at 1st run
+  def setup()
+    # simulate a "startup" function (not available in my Test Unit version)
+    if @@cmptr.nil?
+      @@cmptr = 0 # Set to 0 at first run to make confiuration only once
+      # Testing if not alread allocated.
+      # This is usefull if you want to enter the informations manually first.
+      if @@user_login.nil? or @@user_login.length == 0
+        print "Please enter a valid firefox sync email account: "
+        @@user_login = gets.chomp()
+        print "Do you need a HTTP proxy to connect to internet? (y/n) [n]: "
+        conf_proxy = gets.chomp()
+        @@prox_ip = @@prox_port = @@prox_login = @@prox_pwd = nil
+        if conf_proxy.downcase() == 'y'
+          print "Please enter the HTTP proxy IP: "
+          @@prox_ip = gets.chomp()
+          print "Please enter the HTTP proxy port: "
+          @@prox_port = gets.chomp()
+          print "Please enter the HTTP proxy login (if any): "
+          @@prox_login = gets.chomp()
+          if @@prox_login.length == 0
+            @@prox_login = nil
+          else
+            print "Please enter the HTTP proxy password (if any): "
+            @@prox_pwd = gets.chomp()
+          end
+        end
+      end
+    end
+  end
 
   # As the proxy is optionnal, we test the constructor without proxy
   #
@@ -100,14 +133,14 @@ class FSAC_usersvc_test < Test::Unit::TestCase
     puts "[INFO] Testing the login_exists? function"
     user_name = 'dummy_login_wont_work'
 
-    ff_uac = FSAC_usersvc.new(user_name)
+    ff_uac = FSAC_usersvc.new(user_name, @@prox_ip, @@prox_port, @@prox_login, @@prox_pwd)
     
     puts "[INFO] Testing login_exists? without parameters"
     # Should take provided username as defaut
     assert(!(ff_uac.login_exists?))
 
     puts "[INFO] Testing login_exists? with a custom login"
-    assert(ff_uac.login_exists?(FF_SYNC_LOGIN))
+    assert(ff_uac.login_exists?(@@user_login))
   end
 
 
@@ -116,7 +149,7 @@ class FSAC_usersvc_test < Test::Unit::TestCase
   #
   def test_get_captcha()
     puts "[INFO] Testing the get_captcha function"
-    ff_uac = FSAC_usersvc.new('')
+    ff_uac = FSAC_usersvc.new('', @@prox_ip, @@prox_port, @@prox_login, @@prox_pwd)
     assert_match('https://www.google.com/recaptcha/api', ff_uac.get_captcha())
   end
 
@@ -125,19 +158,19 @@ class FSAC_usersvc_test < Test::Unit::TestCase
   #
   def test_get_weave_node()
     puts "[INFO] Testing the get_weave_node function"
-    ff_uac = FSAC_usersvc.new(FF_SYNC_LOGIN)
+    ff_uac = FSAC_usersvc.new(@@user_login, @@prox_ip, @@prox_port, @@prox_login, @@prox_pwd)
     assert_match(/https:\/\/.*\.services\.mozilla\.com\//,ff_uac.get_weave_node())
-    ff_uac = FSAC_usersvc.new('dummy_login')
+    ff_uac = FSAC_usersvc.new('dummy_login', @@prox_ip, @@prox_port, @@prox_login, @@prox_pwd)
     assert_raise( IOError ) { ff_uac.get_weave_node() }
   end
 
   def test_require_password_reset()
     puts "[INFO] Testing the require_password_reset function"
     # Incorrect of missing user
-    ff_uac = FSAC_usersvc.new('dummy_login')
+    ff_uac = FSAC_usersvc.new('dummy_login', @@prox_ip, @@prox_port, @@prox_login, @@prox_pwd)
     assert_raise( IOError ) { ff_uac.require_password_reset() }
-    # Incorrect captcha, that's the best we can do here
-    ff_uac = FSAC_usersvc.new(FF_SYNC_LOGIN)
+    # Incorrect captcha, that's the best we can do here for now
+    ff_uac = FSAC_usersvc.new(@@user_login, @@prox_ip, @@prox_port, @@prox_login, @@prox_pwd)
     assert_raise( IOError ) { ff_uac.require_password_reset() }
   end
 

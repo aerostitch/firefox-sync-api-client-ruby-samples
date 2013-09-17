@@ -97,7 +97,7 @@ class FSAC_common
   def process_http_request(http_method = :http_get, uri_to_get = nil,
                content = nil, auth_usr = nil, auth_pwd = nil)
     # Process the HTTP request using a proxy if configured
-    if(@http_proxy_url.nil? or @http_proxy_url.size == 0)
+    unless(@http_proxy_url.nil? or @http_proxy_url.size == 0)
       http = Net::HTTP::new(uri_to_get.host, uri_to_get.port,
         @http_proxy_url, @http_proxy_port,
         @http_proxy_user, @http_proxy_password)
