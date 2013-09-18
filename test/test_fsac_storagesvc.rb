@@ -45,17 +45,26 @@ class FSAC_usersvc_test < Test::Unit::TestCase
     ac = FSAC_storagesvc.new(@@email, @@pwd, @@passphrase)
     col = JSON.parse(ac.get_collections_size())
     col.each{ |category, value| 
-      assert(['addons', 'tabs', 'clients', 'crypto', 'bookmarks', 'prefs'].include?(category))
+      assert(['addons', 'tabs', 'clients', 'crypto', 'bookmarks',
+             'prefs'].include?(category))
       assert(value.is_a?(Fixnum) || value.is_a?(Float))
+    }
+  end
+
+  # Testing get_collections_count function
+  #
+  def test_get_collections_count()
+    puts "[INFO] Testing get_collections_count function"
+    ac = FSAC_storagesvc.new(@@email, @@pwd, @@passphrase)
+    col = JSON.parse(ac.get_collections_count())
+    col.each{ |category, value| 
+      assert(['addons', 'tabs', 'clients', 'crypto', 'bookmarks',
+             'prefs'].include?(category))
+      assert_instance_of(Fixnum, value)
     }
   end
 end
 # ac = FSAC_storagesvc.new(@@email, @@pwd, @@passphrase)
-# puts "\n\n"
-# puts ac.get_collections_size()
-# puts "\n\n"
-# puts ac.get_collections_count()
-# puts "\n\n"
 # colz = ac.get_user_collections()
 # puts colz
 # puts "\n\n"
