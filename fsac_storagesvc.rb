@@ -151,6 +151,8 @@ class FSAC_storagesvc
     decrypt_data(ciphertxt, @priv_key, iv)
   end
 
+  private
+
   # Function used to decrypt the data
   # and also used in the private key discovery process
   #
