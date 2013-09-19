@@ -63,14 +63,49 @@ class FSAC_usersvc_test < Test::Unit::TestCase
       assert_instance_of(Fixnum, value)
     }
   end
+
+  # Testing get_collections_count function
+  #
+  def test_get_collections_count()
+    puts "[INFO] Testing get_collections_count function"
+    ac = FSAC_storagesvc.new(@@email, @@pwd, @@passphrase)
+    col = JSON.parse(ac.get_collections_count())
+    col.each{ |category, value| 
+      assert(['addons', 'tabs', 'clients', 'crypto', 'bookmarks',
+             'prefs'].include?(category))
+      assert_instance_of(Fixnum, value)
+    }
+  end
+
+  # Testing get_collection_index function
+  #
+  def test_get_collection_index()
+    puts "[INFO] Testing get_collection_index function"
+    ac = FSAC_storagesvc.new(@@email, @@pwd, @@passphrase)
+    ['addons', 'tabs', 'clients', 'crypto', 'bookmarks', 'prefs'].each{ |col|
+      assert_instance_of(Array, ac.get_collection_index(col))
+    }
+  end
+
+  # Testing get_item_data function
+  #
+  def test_get_item_data()
+    puts "[INFO] Testing get_item_data function"
+    ac = FSAC_storagesvc.new(@@email, @@pwd, @@passphrase)
+    # Works on every collections but 'crypto', so be carefull
+    col_items = ac.get_collection_index('bookmarks')
+    # Taking only 10% of the bookmarks for the tests
+    idxlen = col_items.length
+    rdm_idx = (idxlen / 10).times.map{ Random.rand(idxlen) }
+    rdm_idx.each{ |idx| 
+      details = JSON.parse(ac.get_item_data('bookmarks',col_items[idx]))
+      assert_instance_of(Hash, details)
+      details.keys.each{ |k|
+        assert([ 'id', 'type', 'title', 'parentName', 'bmkUri', 'tags',
+               'keyword','description','loadInSidebar','parentid', 'hasDupe',
+               'children', 'pos', 'deleted', 'queryId'
+       ].include?(k), "Failing on key #{k}")
+      }
+    }
+  end
 end
-# ac = FSAC_storagesvc.new(@@email, @@pwd, @@passphrase)
-# colz = ac.get_user_collections()
-# puts colz
-# puts "\n\n"
-# JSON.parse(colz).each do |col,tz|
-#   idx = ac.get_collection_index(col)
-#   puts "----> "+ col + "  "+ idx.to_s
-#   col.each { |item| puts col + "  "+ item + "  "+ 
-#     ac.get_item_data(col,item)} unless col == 'crypto'
-# end
